@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated News Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .news-container { max-width: 800px; margin: auto; }
+        .news-item { border-bottom: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Latest News</h1>
+    <div class="news-container" id="news"></div>
+
+    <script>
+        async function fetchNews() {
+            try {
+                const response = await fetch('https://newsapi.org/v2/top-headlines?country=ca&province=bc&apiKey=e492a02e0e8f4af98d797e8647190616');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                const newsContainer = document.getElementById('news');
+                newsContainer.innerHTML = '';
+                
+                if (!data.articles || data.articles.length === 0) {
+                    newsContainer.innerHTML = '<p>No news available.</p>';
+                    return;
+                }
+                
+                data.articles.forEach(article => {
+                    const newsItem = document.createElement('div');
+                    newsItem.className = 'news-item';
+                    newsItem.innerHTML = `
+                        <h2>${article.title}</h2>
+                        <p>${article.description || 'No description available.'}</p>
+                        <a href="${article.url}" target="_blank">Read more</a>
+                    `;
+                    newsContainer.appendChild(newsItem);
+                });
+            } catch (error) {
+                document.getElementById('news').innerHTML = `<p>Error fetching news: ${error.message}</p>`;
+            }
+        }
+        
+        fetchNews();
+    </script>
+</body>
+</html>
